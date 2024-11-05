@@ -1,0 +1,61 @@
+---
+title: "ClusterProfile_SRCC"
+author: "Camila S Forte"
+date: "2024-09-24"
+---
+
+```{r}
+library(clusterProfiler)
+library(enrichplot)
+library(org.Hs.eg.db)
+```
+
+
+```{r}
+#Signet Ring Carcinoma Cell
+interactions <- read.table("cemitool_results_with_networks/SRCC/interactions.tsv", sep='\t', header=TRUE)
+```
+
+
+```{r}
+CFTR_interactors <- interactions[interactions$Gene1 == "CFTR",]$Gene2
+CFTR_interactors <- list(append(CFTR_interactors, "CFTR"))
+
+edo_bp <- enrichGO(CFTR_interactors[[1]], OrgDb="org.Hs.eg.db", keyType="SYMBOL",
+                ont="BP")
+edo_bp = as.data.frame(edo_bp)
+
+edo_mf <- enrichGO(CFTR_interactors[[1]], OrgDb="org.Hs.eg.db", keyType="SYMBOL",
+                ont="MF")
+edo_mf = as.data.frame(edo_mf)
+
+edo_cc <- enrichGO(CFTR_interactors[[1]], OrgDb="org.Hs.eg.db", keyType="SYMBOL",
+                ont="CC")
+edo_cc = as.data.frame(edo_cc)
+
+#write.table(edo_cc, file = "RESULTADOS STAD/ontologia genica/celular_comp_SRCC.txt", sep = "\t", row.names = F)
+```
+
+
+```{r -  bar plots}
+
+p1 <- ggplotGrob(barplot(edo_bp, showCategory = 10, font.size = 14))
+p2 <- ggplotGrob(barplot(edo_mf, showCategory = 10, font.size = 14))
+p3 <- ggplotGrob(barplot(edo_cc, showCategory = 10, font.size = 14))
+
+plot_bp <- ggarrange(p1, p2, p3, ncol = 3, nrow = 1) 
+
+ggsave("bp_mf_cc_barplot.png", plot=plot_bp, dpi=400, width=18, height = 7, units = "in")
+```
+
+
+
+
+
+
+
+
+
+
+
+
